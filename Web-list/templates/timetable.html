@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Расписание</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/png">
+</head>
+<body>
+    <div class="search-container">
+        <form method="POST">
+            <input type="text" name="group" value="{{ group }}" placeholder="Введите группу">
+            <button type="submit">Найти</button>
+            <button type="submit" name="clear">Очистить</button>
+        </form>
+    </div>
+    
+    {% if error_message %}
+        <div class="error">{{ error_message }}</div>
+    {% endif %}
+
+    {% if timetable %}
+        {% for week in timetable %}
+            <h2>Неделя {{ loop.index }}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>День недели</th>
+                        <th>1-я пара</th>
+                        <th>2-я пара</th>
+                        <th>3-я пара</th>
+                        <th>4-я пара</th>
+                        <th>5-я пара</th>
+                        <th>6-я пара</th>
+                        <th>7-я пара</th>
+                        <th>8-я пара</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for day in week.days %}
+                        <tr>
+                            <td>{{ ['Пнд', 'Втр', 'Срд', 'Чтв', 'Птн', 'Сбт', 'Вск'][loop.index0] }}</td>
+                            {% for lesson in day.lessons %}
+                                {% if lesson %}
+                                    <td class="lesson">
+                                        <strong>{{ lesson.group.name }}</strong><br>
+                                        {{ lesson.subject.name }} ({{ lesson.subject.type }})<br>
+                                        {{ lesson.subject.teacher.fullName }}<br>
+                                        {{ lesson.room.name }}
+                                    </td>
+                                {% else %}
+                                    <td class="empty"></td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endfor %}
+    {% else %}
+        {% if not error_message %}
+            <p>Пожалуйста, введите группу и нажмите "Найти".</p>
+        {% endif %}
+    {% endif %}
+</body>
+</html>
